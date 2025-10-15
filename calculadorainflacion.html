@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.2.1"></script>
+    <script src="inflacion.js"></script>
+    <script src="importanciaRelativa.js"></script>
+    <script src="date.js"></script>
+    <link rel="stylesheet" type="text/css" href="styles.css" />
+    <title>Calculadora de Inflación</title>
+  </head>
+
+  <body onload="load()">
+    <div>
+      <h1>Calculadora de Inflación al Consumidor</h1>
+      <label for="fecha">Desde </label>
+      <select
+        name="fecha"
+        id="fecha"
+        onchange="update(this.options[this.selectedIndex].id)"
+      >
+        <option id="interanual">junio 2022 (interanual)</option>
+        <option id="intermensual">mayo 2023 (intermensual)</option>
+        <option id="yearToDate">enero 2023 (YTD)</option>
+        <option id="preCovid">marzo 2020 (pre-pandemia)</option>
+      </select>
+      <label for="fecha"> hasta el mes más reciente (junio 2023).</label>
+    </div>
+
+    <div class="sticky-div">
+      <h2 id="inflacion">Tu Inflación:</h2>
+      <h2 style="display: inline-block" id="counting"></h2>
+      <div class="gradient"></div>
+    </div>
+
+    <div class="select-container fade-in-3">
+      <div class="pregunta">
+        <label for="educacion">¿Pagas por educación privada? </label>
+        <select
+          name="educacion"
+          id="educacion"
+          onchange="educacion(this.options[this.selectedIndex].id)"
+        >
+          <option id="educacion0"></option>
+          <option id="educacion1">Sí, pago por educación primaria.</option>
+          <option id="educacion2">Sí, pago por educación secundaria.</option>
+          <option id="educacion3">Sí, pago por educación terciaria.</option>
+          <option id="educacion4">No.</option>
+        </select>
+        <div class="tooltip">
+          i
+          <span class="tooltiptext">
+            Los precios de educación primaria y secundaria son 29% más altos de
+            lo que eran en 2013.
+          </span>
+        </div>
+      </div>
+      <br />
+      <div class="pregunta">
+        <label for="restaurante">¿Con qué frequencia vas a restaurantes?</label>
+        <select
+          name="restaurante"
+          id="restaurante"
+          onchange="restaurante(this.options[this.selectedIndex].id)"
+        >
+          <option id="restaurante0"></option>
+          <option id="restaurante1">2 o 3 veces por semana.</option>
+          <option id="restaurante2">Menos de 2 veces por semana.</option>
+          <option id="restaurante3">Más de 3 veces por semana.</option>
+          <option id="restaurante4">Nunca.</option>
+        </select>
+        <div class="tooltip">
+          i
+          <span class="tooltiptext">
+            Los precios en los restaurantes son 43% más altos de lo que eran en
+            2013.
+          </span>
+        </div>
+      </div>
+      <br />
+      <div class="pregunta">
+        <label for="auto">¿Tienes un auto?</label>
+        <select
+          name="auto"
+          id="auto"
+          onchange="auto(this.options[this.selectedIndex].id)"
+        >
+          <option id="auto0"></option>
+          <option id="auto1">Sí.</option>
+          <option id="auto2">No.</option>
+        </select>
+        <div class="tooltip">
+          i
+          <span class="tooltiptext">
+            El 18 de julio de 2022 se implementó un subsidio sobre el
+            combustible, reduciendo el impacto de la inflación al consumidor con
+             auto.
+          </span>
+        </div>
+      </div>
+      <br />
+      <div class="pregunta">
+        <label for="propietario">¿Eres proprietario de tu vivienda?</label>
+        <select
+          name="propietario"
+          id="propietario"
+          onchange="propietario(this.options[this.selectedIndex].id)"
+        >
+          <option id="propietario0"></option>
+          <option id="propietario1">Sí.</option>
+          <option id="propietario2">No.</option>
+        </select>
+        <div class="tooltip">
+          i
+          <span class="tooltiptext">
+            El costo de alquiler se ha incrementado un 11% y el costo del
+            mantenimiento de una vivienda se ha incrementado un 27% desde 2013.
+          </span>
+        </div>
+      </div>
+      <br />
+      <div class="pregunta">
+        <label for="teCafe">¿Consumes té y/o café?</label>
+        <select
+          name="teCafe"
+          id="teCafe"
+          onchange="teCafe(this.options[this.selectedIndex].id)"
+        >
+          <option id="teCafe0"></option>
+          <option id="teCafe1">Sí.</option>
+          <option id="teCafe2">No.</option>
+        </select>
+        <div class="tooltip">
+          i
+          <span class="tooltiptext">
+            Los precios de café se han incrementado un 15% desde febrero 2022.
+          </span>
+        </div>
+      </div>
+      <br />
+      <div class="pregunta">
+        <label for="energia"
+          >¿Consumes más de 300 kW de electricidad por mes?</label
+        >
+        <div class="tooltip">
+          i
+          <span class="tooltiptext">
+            Si tienes más de 2 aires acondicionados en tu hogar es probable que
+            consumas más de 300 kW por mes.
+          </span>
+        </div>
+        <select
+          name="energia"
+          id="energia"
+          onchange="energia(this.options[this.selectedIndex].id)"
+        >
+          <option id="energia0"></option>
+          <option id="energia1">Sí.</option>
+          <option id="energia2">No.</option>
+        </select>
+        <div class="tooltip">
+          i
+          <span class="tooltiptext">
+            Los precios de electricidad se han incrementaro un 41% desde mayo 2022. Aún
+            así, los precios de electricidad han disminuido un 9% desde 2013.
+          </span>
+        </div>
+      </div>
+      <br />
+      <div class="pregunta">
+        <label for="seguro">¿Tienes seguro privado?</label>
+        <select
+          name="seguro"
+          id="seguro"
+          onchange="seguro(this.options[this.selectedIndex].id)"
+        >
+          <option id="seguro0"></option>
+          <option id="seguro1">Sí.</option>
+          <option id="seguro2">No.</option>
+        </select>
+        <div class="tooltip">
+          i
+          <span class="tooltiptext"
+            >Los precios de seguros privados se han incrementado un 28% desde 2013.</span
+          >
+        </div>
+      </div>
+      <br />
+
+      <div class="chart-container">
+        <canvas id="myChart" width="400" height="400"></canvas>
+      </div>
+
+      <div class="end">
+        <div class="evenly-spaced fade-in-4">
+          <h3>¿Qué es la inflación y el nivel de precios?</h3>
+          <p>
+            La inflación es el cambio porcentual de precios de un periodo a
+            otro.
+          </p>
+          <p>El nivel de precios es el promedio de precios en absoluto.</p>
+          <h3>Metodología</h3>
+          <p>
+            La inflación al consumidor es calculada usando el índice de precios
+            al consumidor (IPC), un indicador que mide el cambio de precios en
+            una canasta de artículos y servicios, que se mide a través de encuestas.
+            Sin embargo, artículos y servicios cambian de precio de forma
+            distinta, y cada persona tiene diferentes costumbres de consumo.
+            Este proyecto desea estimar mejor la inflación de cada individuo,
+            en base a algunas preguntas sobre comportamientos de consumo.
+          </p>
+          <p>
+            Las preguntas anteriores modifican la importancia relativa de
+            diferentes grupos de artículos y servicios sobre sus respectivas
+            tasas de inflación.
+          </p>
+          <h3>Fuentes</h3>
+          <p>Instituto Nacional de Estadística y Censo (INEC)</p>
+          <p>Encuesta de Ingresos y Gastos de los Hogares (EIGH)</p>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
